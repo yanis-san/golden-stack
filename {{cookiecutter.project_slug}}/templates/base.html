@@ -1,0 +1,28 @@
+{% raw %}{% load static tailwind_tags django_htmx %}{% endraw %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ cookiecutter.project_name }}</title>
+
+    {% raw %}
+    {% tailwind_css %}
+    
+    <script src="{% static 'js/alpine.min.js' %}" defer></script>
+    <script src="{% static 'js/htmx.min.js' %}" defer></script>
+    {% endraw %}
+</head>
+<body class="bg-background text-slate-800 font-sans antialiased">
+    
+    {% raw %}
+    {% django_htmx_script %}
+
+    <main class="min-h-screen">
+        {% block content %}
+        {% endblock %}
+    </main>
+    {% endraw %}
+
+</body>
+</html>
