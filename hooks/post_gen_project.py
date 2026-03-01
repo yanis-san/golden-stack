@@ -2,11 +2,14 @@ import os
 import subprocess
 import sys
 import urllib.request
+import time
 
 # --- CONFIGURATION ---
 SUPERUSER_NAME = "yanis"
 SUPERUSER_EMAIL = "yanis@example.com"
 SUPERUSER_PASS = "ueshlamiff"
+MAX_RETRIES = 3
+RETRY_DELAY = 5  # secondes
 
 def download_file(url, dest_path):
     print(f"⬇️  Téléchargement de {os.path.basename(dest_path)}...")
@@ -14,6 +17,22 @@ def download_file(url, dest_path):
         urllib.request.urlretrieve(url, dest_path)
     except Exception as e:
         print(f"❌ Erreur téléchargement {url}: {e}")
+
+def run_with_retry(cmd, description, max_retries=MAX_RETRIES):
+    """Exécute une commande avec retry en cas d'échec réseau"""
+    for attempt in range(1, max_retries + 1):
+        try:
+            subprocess.run(cmd, check=True)
+            return True
+        except subprocess.CalledProcessError as e:
+            if attempt < max_retries:
+                print(f"⚠️  Tentative {attempt}/{max_retries} échouée pour '{description}'")
+                print(f"   Nouvelle tentative dans {RETRY_DELAY}s...")
+                time.sleep(RETRY_DELAY)
+            else:
+                print(f"❌ Échec de '{description}' après {max_retries} tentatives")
+                raise e
+    return False
 
 def get_venv_python():
     """Récupère le chemin de l'exécutable Python dans le venv"""
@@ -42,9 +61,12 @@ def main():
     subprocess.run([venv_python, "-m", "pip", "install", "--upgrade", "pip"], check=True)
     subprocess.run([venv_python, "-m", "pip", "install", "-r", "requirements.txt"], check=True)
 
-    # 4. TAILWIND BINARY
+    # 4. TAILWIND BINARY (avec retry car le téléchargement peut échouer)
     print("🎨 Installation binaire Tailwind...")
-    subprocess.run([venv_python, "manage.py", "tailwind", "install"], check=True)
+    run_with_retry(
+        [venv_python, "manage.py", "tailwind", "install"],
+        "Installation Tailwind"
+    )
 
     # 5. MIGRATIONS
     print("🗄️  Migrations...")
