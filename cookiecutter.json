@@ -1,0 +1,6 @@
+{
+  "project_name": "Ma Boutique",
+  "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+  "author_name": "Yanis",
+  "description": "Stack Django Golden (Tailwind + Alpine + HTMX)"
+}

@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@source "../../../**/*.{html,py,js}";
+
+@theme {
+    --color-primary: #6750A4;
+    --color-background: #f8fafc;
+    --radius-pill: 9999px;
+}
